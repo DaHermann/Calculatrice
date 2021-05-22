@@ -1,0 +1,112 @@
+*,
+::before,
+::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    background: rgb(68, 55, 55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    width: 400px;
+    height: 600px;
+    background: rgb(0, 0, 0);
+}
+
+.screen {
+    width: 360px;
+    height: 80px;
+    font-size: 20px;
+    /* background-color: rgb(155, 150, 86); */
+    background-color: #BDB762;
+    text-align: right;
+    padding: 20px 5%;
+    margin: 30px 20px;
+    border-radius: 5px;
+    color: black;
+}
+
+.buttons {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 3px;
+    padding: 30px 20px;
+}
+
+.button {
+    margin: 5px;
+    padding: 10px 7px;
+    background: rgb(80, 69, 69);
+    color: white;
+    font-size: 20px;
+    border: none;
+}
+
+.button:hover {
+    background-color: rgba(128, 128, 128, 0.301);
+}
+
+.trigo {
+    margin: 5px;
+    padding: 10px 7px;
+    background: rgb(77, 123, 129);
+    color: white;
+    font-size: 20px;
+    border: none;
+}
+
+.trigo:hover {
+    background-color: rgba(128, 128, 128, 0.301);
+}
+
+.rougeB {
+    margin: 5px;
+    padding: 10px 7px;
+    background-color: rgb(121, 41, 41);
+    color: white;
+    font-size: 20px;
+    border: none;
+}
+
+.jaune {
+    margin: 5px;
+    padding: 10px 7px;
+    background-color: rgb(155, 150, 86);
+    color: white;
+    font-size: 20px;
+    border: none;
+}
+
+.rouge {
+    margin: 2px;
+    padding: 3px 5px;
+    background-color: rgb(255, 0, 0);
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+    border: none;
+}
+
+.second {
+    margin: 2px;
+    padding: 3px 5px;
+    background-color: rgb(80, 69, 69);
+    color: white;
+    font-size: 20px;
+    border: none;
+}
+
+.allumage {
+    width: 95%;
+    display: flex;
+    justify-content: flex-end;
+}
