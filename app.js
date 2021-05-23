@@ -170,10 +170,17 @@ btnOn.classList.add('rouge')
 btnSecond.classList.add('second')
 
 
-
 btnSin.classList.add('trigo')
 btnCos.classList.add('trigo')
 btnTan.classList.add('trigo')
+
+ /**
+  * ########################################################################
+  * 
+  * ########################################################################
+  */
+
+let operation;
 
 
 btn0.addEventListener('click', showInScreen);
@@ -200,7 +207,7 @@ reset.addEventListener('click', reseT);
 
 btnOn.addEventListener('click', onOFF)
 
-btnCos.addEventListener('click', showInScreen)
+btnCos.addEventListener('click',showInScreen)
 btnSin.addEventListener('click', showInScreen)
 btnTan.addEventListener('click', showInScreen)
 braket1.addEventListener('click', showInScreen)
@@ -208,9 +215,7 @@ braket2.addEventListener('click', showInScreen)
 dot.addEventListener('click', showInScreen)
 btn00.addEventListener('click', showInScreen)
 btnLn.addEventListener('click', showInScreen)
-equaal.addEventListener('click', result)
-
-
+equaal.addEventListener('click', resulT)
 
 
 
@@ -243,30 +248,19 @@ let calculator_button = [{
 ]
 
 
-let data = {
-    operation: [],
-    resultat: []
-}
+/**
+ * regex de verification
+ */
 
+let OpReg = /^[0-9]*\+\-\/*[0-9]*$/
+let Factreg = /^[0-9]*!$/;
+let cosReg = /^cos[0-9]*$/;
+let sinReg = /^sin[0-9]*$/;
+let tanReg = /^tan[0-9]*$/;
+let eReg = /^e[0-9]*$/;
+let lnReg = /^ln[0-9]*$/;
+let puissReg = /^[0-9]*\^[0-9]{1,3}$/
 
-
-// function change() {
-//     if (true) {
-//         btnOn.textContent = 'off'
-//         btnOn.style.background = " rgb(155, 150, 86)"
-//     }
-// }
-
-
-
-// function factorielle(num) {
-//     if (num === 0 || num === 0) return 1
-
-//     let result = 1
-//     for (let i = 0; i < num; i++) {
-//         result = result * i
-//         if (result === Infinity) return Infinity
-//     }
 
 
 /***
@@ -276,15 +270,15 @@ let data = {
 /**
  * Fonction permettant de d'showInScreen une valeur à l'ecran
  */
-function showInScreen(){
+function showInScreen(e){
     if(!onOff)
         return;
 
     if(!err){
-        screen.value += this.textContent;
-        console.log('clicked : '+ this.textContent);
+        screen.value += e.target.textContent;
+        console.log('clicked : '+ e.target.textContent);
     }else{
-        screen.value = this.textContent;
+        screen.value = e.target.textContent;
         err = !err;
     }
     
@@ -293,45 +287,54 @@ function showInScreen(){
 /**
  * Fonction permettant de calculer le resultat
  */
-function result(){
+function resulT(){
     if(!onOff)
         return;
 
+        
     let operation = screen.value;
 
-    // + * / - 
+    
+    if(operation.match(OpReg) != null ){
+        basicOp(operation);
+    }
 
-    // let operation = screen.value.split('')
-    // let op = operation.join(''); // recuperation de l'operation conversion en chaine
-    // try {
-    //     screen.value = eval(op); // insertion du resutltat à l'ecran
-    // } catch (error) {
-    //     // screen.value = 'ERROR';
-    //     err = !err;
-    //     errBG();
-    // }
+    if(operation.match(Factreg) != null){
+        let fact = operation.match(Factreg);
+        fact = fact[0].split('');
+        fact.pop()
+        let f = parseInt(fact.join(''));
+        screen.value = facT(f);
+
+    }
+
+    if(operation.match(cosReg) != null){
+        trigo('cos');
+    }
+
+    if(operation.match(sinReg) != null){
+        trigo('sin');
+    }
+
+    if(operation.match(tanReg) != null){
+        trigo('tan');
+    }
 
 
-    // factoriel 
+    if(operation.match(eReg) != null){
+        trigo('e');
+    }
 
-    // let reg = /^[0-9]*!$/;
-    // let fact = operation.match(reg);
-    // if(fact != null){
-    //     fact = fact[0].split('');
-    //     fact.pop()
-    //     let f = parseInt(fact.join(''));
-    //     screen.value = facT(f);
-    //     console.log('OUI '+typeof(f));
-    // }else{
 
-    //     console.log('NON '+ fact);
+    if(operation.match(lnReg) != null){
+        trigo('ln');
+    }
 
-    // }
+    if(operation.match(puissReg) != null){
 
-    // Puissance
-
-    PuisS()
-
+        let puis = operation.match(puissReg);
+        PuisS(puis);
+    }
 
 }
 
@@ -369,7 +372,6 @@ function reseT(){
     errBG();
 }
 
-
 /**
  * Fonction de gestion d'erreur de calcul
  */
@@ -386,6 +388,8 @@ function errBG(){
  * Fonction permettant l'allumage et l'exteinction de la calculatrice
  */
 function onOFF(){
+    operation = '';
+
     if(!onOff){
         onOff = !onOff;
         screen.disabled = true
@@ -411,30 +415,86 @@ function facT(nbr){
 }
 
 
-
-function PuisS(){
-    let operation = screen.value;
-    let reg = /^[0-9]*\^[0-9]{1,3}$/; 
-    let puis = operation.match(reg);
-
-    if(puis != null){
+function PuisS(puis){
+   
+    try {
         puis = puis[0].split('^');
         let nb = parseInt(puis[0]);
         let pu = parseInt(puis[1]);
-
-        // let p = parseInt(puis.join(''));
-        screen.value = calPuiss(nb,pu);
-        console.log('OUI '+nb+' '+pu);
-    }else{
-
-        console.log('NON '+ puis);
-
+        show(calPuiss(nb,pu));
+    } catch (error) {
+        console.log('err')
+        err = !err;
+        errBG();
     }
 
+
     function calPuiss(nbr,p){
-        for(let i = 1; i < p; i++){
-            nbr *= nbr
+        let result = 1;
+        for(let i = 0; i < p; i++){
+            result *= nbr
         }
-        return nbr;
+        return result;
+    }
+}
+
+
+
+/**
+ * Fonction qui calcul de cosinus et affiche le resultat
+ */
+
+function trigo(opera){
+
+   try {
+    let op =  operation.split('cos');
+    let num = parseInt(op[1]);
+    
+    if(opera==='cos'){
+        show(Math.cos(num));
+    }
+    if(opera==='sin'){
+        show(Math.sin(num));
+    }
+    if(opera==='tan'){
+        show(Math.tan(num));
+    }
+    if(opera==='e'){
+        show(Math.exp(num));
+    }
+    if(opera==='ln'){
+        show(Math.ln(num));
+    }
+    if(opera==='cos'){
+        show(Math.cos(num));
+    }
+    
+   } catch (error) {
+       console.log(error)
+   }
+}
+
+
+
+/**
+ * Affiche les resultat
+ */
+function show(res){
+    screen.value = res;
+}
+
+
+/**
+ * Fonction de calul
+ */
+function basicOp(param){
+
+    let operation = param.split('')
+    let op = operation.join(''); // recuperation de l'operation conversion en chaine
+    try {
+       show(eval(op)); // insertion du resutltat à l'ecran
+    } catch (error) {
+        err = !err;
+        errBG();
     }
 }
