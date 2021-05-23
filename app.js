@@ -252,14 +252,16 @@ let calculator_button = [{
  * regex de verification
  */
 
-let OpReg = /^[0-9]*\+\-\/*[0-9]*$/
+let OpReg = /[^[0-9]*[\*|\-|\+|\/][0-9]*$]*/;
 let Factreg = /^[0-9]*!$/;
 let cosReg = /^cos[0-9]*$/;
 let sinReg = /^sin[0-9]*$/;
 let tanReg = /^tan[0-9]*$/;
 let eReg = /^e[0-9]*$/;
 let lnReg = /^ln[0-9]*$/;
-let puissReg = /^[0-9]*\^[0-9]{1,3}$/
+let puissReg = /^[0-9]*[\^][0-9]*$/;
+let logReg = /^log[0-9]*$/;
+let errReg = /[a-zA-Z]*/;
 
 
 
@@ -273,15 +275,14 @@ let puissReg = /^[0-9]*\^[0-9]{1,3}$/
 function showInScreen(e){
     if(!onOff)
         return;
-
-    if(!err){
+        
+    if(err===false){
         screen.value += e.target.textContent;
         console.log('clicked : '+ e.target.textContent);
     }else{
-        screen.value = e.target.textContent;
-        err = !err;
+        // screen.value = e.target.textContent;
+        reseT();
     }
-    
 }
 
 /**
@@ -291,51 +292,78 @@ function resulT(){
     if(!onOff)
         return;
 
+
         
     let operation = screen.value;
-
     
-    if(operation.match(OpReg) != null ){
-        basicOp(operation);
+    try {
+        
+        console.log(OpReg.test(operation));
+
+        if(OpReg.test(operation)){
+            // Addition, Multiplication, Soustartion, Division
+            basicOp(operation);
+            console.log(' Addition, Multiplication, Soustartion, Division ');
+        }
+        else if(Factreg.test(operation)){
+            // Factoriel
+            let fact = operation;
+            fact = fact.split('');
+            fact.pop()
+            let f = parseInt(fact.join(''));
+            screen.value = facT(f);
+            console.log('Factoriel');
+        }
+        else if(cosReg.test(operation)){
+            // Cosinus
+            trigo('cos', operation);
+            console.log('Cosinus');
+        }
+        else if(sinReg.test(operation)){
+            // Sinus
+            trigo('sin', operation);
+            console.log('Sinus');
+        }
+        else if(tanReg.test(operation)){
+            // Tangente
+            trigo('tan', operation);
+            console.log('Tangente');
+        }
+        else if(eReg.test(operation)){
+            // Expo
+            trigo('e', operation);
+            console.log('Exponaciel');
+        }
+        else if(lnReg.test(operation)){
+            // Logarithme neperien
+            trigo('ln', operation);
+            console.log('Logarithme Neperien');
+        }
+        else if(logReg.test(operation)){
+            // Logarithme à base 10
+            trigo('log', operation);
+            console.log('Logarithme');
+        }
+        else if(puissReg.test(operation)){
+            // Puissance
+            PuisS(operation);
+            console.log('Puissance');
+        }
+        else if(errReg.test(operation)){
+            err = true;
+            errBG();
+            console.log('ERROR opration')
+        }
+        else {
+            err = true;
+            errBG(); // erreur
+            console.log('ERROR 2')
+        }
+    } catch (error) {
+        err = true;
+        errBG();
+        console.log('error catch '+ error);
     }
-
-    if(operation.match(Factreg) != null){
-        let fact = operation.match(Factreg);
-        fact = fact[0].split('');
-        fact.pop()
-        let f = parseInt(fact.join(''));
-        screen.value = facT(f);
-
-    }
-
-    if(operation.match(cosReg) != null){
-        trigo('cos');
-    }
-
-    if(operation.match(sinReg) != null){
-        trigo('sin');
-    }
-
-    if(operation.match(tanReg) != null){
-        trigo('tan');
-    }
-
-
-    if(operation.match(eReg) != null){
-        trigo('e');
-    }
-
-
-    if(operation.match(lnReg) != null){
-        trigo('ln');
-    }
-
-    if(operation.match(puissReg) != null){
-
-        let puis = operation.match(puissReg);
-        PuisS(puis);
-    }
-
 }
 
 
@@ -344,21 +372,22 @@ function resulT(){
  */
 
 function deL(e){
-    if(!onOff)
+    if(onOff != true)
         return;
 
-    if(!err){
-        let operation = screen.value.split('');
+    let operation = screen.value.split('');
+
+    if(err!=true){
         operation.pop();
         let op = operation.join('');
         screen.value = op;
     }else{
-        e.preventDefault();
-        reseT();
-        err = !err;
-        console.log(err);
+        operation.pop();
+        let op = operation.join('');
+        err = false;
+        errBG();
+        screen.value = op;
     }
-    errBG();
 }
 
 /**
@@ -367,8 +396,9 @@ function deL(e){
 function reseT(){
     if(!onOff)
         return;
-        
+
     screen.value = '';
+    err = false;
     errBG();
 }
 
@@ -376,11 +406,12 @@ function reseT(){
  * Fonction de gestion d'erreur de calcul
  */
 function errBG(){
-    if(!err){
-        screen.style.backgroundColor = 'rgb(155, 150, 86)';
-    }else{
+    console.log('erreur code');
+
+    if(err===true){
         screen.style.backgroundColor = '#FF4233';
-        err = !err;
+    }else{
+        screen.style.backgroundColor = '#BDB762';
     }
 }
 
@@ -396,11 +427,13 @@ function onOFF(){
         screen.placeholder = 0
         btnOn.textContent = 'OFF';
         btnOn.style.background = " rgb(155, 150, 86)";
+        screen.style.backgroundColor = '#BDB762';
     }else {
         onOff = !onOff;
         screen.disabled = true
         screen.value = ''
         screen.placeholder = ''
+        screen.style.backgroundColor = '#BDB762';
         btnOn.textContent = 'ON';
         btnOn.style.background = "rgb(255, 0, 0)";
     }
@@ -409,6 +442,8 @@ function onOFF(){
 
 
 function facT(nbr){
+    console.log('FATCTORIEL');
+
     if(nbr == 1 || nbr == 0)
         return 1;
     return nbr * facT(nbr - 1);    
@@ -416,15 +451,15 @@ function facT(nbr){
 
 
 function PuisS(puis){
-   
+    console.log('PUISSANCE');
+
     try {
         puis = puis[0].split('^');
         let nb = parseInt(puis[0]);
         let pu = parseInt(puis[1]);
         show(calPuiss(nb,pu));
     } catch (error) {
-        console.log('err')
-        err = !err;
+        err = true;
         errBG();
     }
 
@@ -444,10 +479,12 @@ function PuisS(puis){
  * Fonction qui calcul de cosinus et affiche le resultat
  */
 
-function trigo(opera){
+function trigo(opera, data){
+    console.log('TRIGO');
+    console.log('data : ',data);
 
    try {
-    let op =  operation.split('cos');
+    let op =  data.split(opera);
     let num = parseInt(op[1]);
     
     if(opera==='cos'){
@@ -463,10 +500,10 @@ function trigo(opera){
         show(Math.exp(num));
     }
     if(opera==='ln'){
-        show(Math.ln(num));
+        show(Math.log2(num));
     }
-    if(opera==='cos'){
-        show(Math.cos(num));
+    if(opera==='log'){
+        show(Math.log10(num));
     }
     
    } catch (error) {
@@ -480,7 +517,18 @@ function trigo(opera){
  * Affiche les resultat
  */
 function show(res){
-    screen.value = res;
+    console.log('SHOW');
+
+    console.log('Reg : '+errReg.test(res));
+    console.log('res : '+res);
+
+    if(errReg.test(res) == false){
+        err = true;
+        screen.value = 'Error';
+        errBG();
+    }else{
+        screen.value = res;
+    }
 }
 
 
@@ -494,7 +542,7 @@ function basicOp(param){
     try {
        show(eval(op)); // insertion du resutltat à l'ecran
     } catch (error) {
-        err = !err;
-        errBG();
+        err = true;
+       //errBG();
     }
 }
