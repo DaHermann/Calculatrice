@@ -36,7 +36,7 @@ let btnFac = document.createElement('button');
 
 let btnOn = document.createElement('button');
 let btnSecond = document.createElement('button');
-let percent = document.createElement('button');
+let mod = document.createElement('button');
 let braket1 = document.createElement('button');
 let braket2 = document.createElement('button');
 let err = false;
@@ -80,7 +80,7 @@ equaal.textContent = '='
 
 btnOn.textContent = 'ON'
 btnSecond.textContent = '2nd'
-percent.textContent = '%'
+mod.textContent = '%'
 
 
 
@@ -128,7 +128,7 @@ buttons.appendChild(sub)
 buttons.appendChild(btn0)
 buttons.appendChild(dot)
 buttons.appendChild(btn00)
-buttons.appendChild(percent)
+buttons.appendChild(mod)
 buttons.appendChild(equaal)
 
 
@@ -156,7 +156,7 @@ btnLn.classList.add('trigo')
 btnExp.classList.add('trigo')
 btnPss.classList.add('trigo')
 add.classList.add('button')
-percent.classList.add('button')
+mod.classList.add('button')
 equaal.classList.add('button')
 sub.classList.add('button')
 multi.classList.add('button')
@@ -174,13 +174,11 @@ btnSin.classList.add('trigo')
 btnCos.classList.add('trigo')
 btnTan.classList.add('trigo')
 
- /**
-  * ########################################################################
-  * 
-  * ########################################################################
-  */
-
+/**
+ * Global Varaiable
+ */
 let operation;
+screen.disabled = true;
 
 
 btn0.addEventListener('click', showInScreen);
@@ -195,6 +193,7 @@ btn7.addEventListener('click', showInScreen);
 btn8.addEventListener('click', showInScreen);
 btn9.addEventListener('click', showInScreen);
 add.addEventListener('click', showInScreen);
+mod.addEventListener('click', showInScreen);
 sub.addEventListener('click', showInScreen);
 btnFac.addEventListener('click', showInScreen);
 btnExp.addEventListener('click', showInScreen);
@@ -220,33 +219,6 @@ equaal.addEventListener('click', resulT)
 
 
 
-let calculator_button = [{
-        name: 'cosinus',
-        Symbol: 'cos',
-        formule: 'Math.cos'
-    },
-    {
-        name: 'sinus',
-        Symbol: 'sin',
-        formule: 'Math.sin'
-    },
-    {
-        name: 'tangente',
-        Symbol: 'tan',
-        formule: 'Math.tan'
-    },
-    {
-        name: 'exponentielle',
-        Symbol: 'e',
-        formule: 'Math.exp'
-    },
-    {
-        name: 'logaritme',
-        Symbol: 'ln',
-        formule: 'Math.ln'
-    }
-]
-
 
 /**
  * regex de verification
@@ -260,14 +232,19 @@ let tanReg = /^tan[0-9]*$/;
 let eReg = /^e[0-9]*$/;
 let lnReg = /^ln[0-9]*$/;
 let puissReg = /^[0-9]*[\^][0-9]*$/;
+let modReg = /^[0-9]*[\%][0-9]*$/;
 let logReg = /^log[0-9]*$/;
 let errReg = /[a-zA-Z]*/;
 
 
 
-/***
- * Winner calculatrice par
- */
+
+ /**
+  * ########################################################################
+  * Function State By Dani Winner
+  * ########################################################################
+  */
+
 
 /**
  * Fonction permettant de d'showInScreen une valeur à l'ecran
@@ -349,6 +326,11 @@ function resulT(){
             PuisS(operation);
             console.log('Puissance');
         }
+        else if(modReg.test(operation)){
+            // Puissance
+            modulO(operation);
+            console.log('Modulo');
+        }
         else if(errReg.test(operation)){
             err = true;
             errBG();
@@ -365,7 +347,6 @@ function resulT(){
         console.log('error catch '+ error);
     }
 }
-
 
 /**
  * Fonction permetttant de supprimer les elements de l'ecran
@@ -423,14 +404,12 @@ function onOFF(){
 
     if(!onOff){
         onOff = !onOff;
-        screen.disabled = true
         screen.placeholder = 0
         btnOn.textContent = 'OFF';
         btnOn.style.background = " rgb(155, 150, 86)";
         screen.style.backgroundColor = '#BDB762';
     }else {
         onOff = !onOff;
-        screen.disabled = true
         screen.value = ''
         screen.placeholder = ''
         screen.style.backgroundColor = '#BDB762';
@@ -439,8 +418,11 @@ function onOFF(){
     }
 }
 
-
-
+/**
+ * Fonction de calcul de factoriel
+ * @param {*} nbr 
+ * @returns 
+ */
 function facT(nbr){
     console.log('FATCTORIEL');
 
@@ -449,16 +431,22 @@ function facT(nbr){
     return nbr * facT(nbr - 1);    
 }
 
-
+/***
+ * Fonction de Calcul de Puissance
+ */
 function PuisS(puis){
     console.log('PUISSANCE');
 
     try {
-        puis = puis[0].split('^');
+        puis = puis.split('^');
+        console.log('puis '+puis);
         let nb = parseInt(puis[0]);
         let pu = parseInt(puis[1]);
+
         show(calPuiss(nb,pu));
+
     } catch (error) {
+        console.log('error : '+error);
         err = true;
         errBG();
     }
@@ -473,7 +461,30 @@ function PuisS(puis){
     }
 }
 
+/**
+ * Function de calcul de Modulo
+ * @param {*} mod 
+ */
+function modulO(mod){
+    console.log('MODULO');
 
+    try {
+        mod = mod.split('%');
+        let nb1 = parseInt(mod[0]);
+        let nb2 = parseInt(mod[1]);
+        show(calMod(nb1,nb2));
+    } catch (error) {
+        console.log('error : '+error);
+        err = true;
+        errBG();
+    }
+
+
+    function calMod(nbr1,nbr2){
+        let result = nbr1 % nbr2;
+        return result;
+    }
+}
 
 /**
  * Fonction qui calcul de cosinus et affiche le resultat
@@ -481,8 +492,6 @@ function PuisS(puis){
 
 function trigo(opera, data){
     console.log('TRIGO');
-    console.log('data : ',data);
-
    try {
     let op =  data.split(opera);
     let num = parseInt(op[1]);
@@ -504,14 +513,12 @@ function trigo(opera, data){
     }
     if(opera==='log'){
         show(Math.log10(num));
-    }
+    } 
     
    } catch (error) {
        console.log(error)
    }
 }
-
-
 
 /**
  * Affiche les resultat
@@ -530,7 +537,6 @@ function show(res){
         screen.value = res;
     }
 }
-
 
 /**
  * Fonction de calul
